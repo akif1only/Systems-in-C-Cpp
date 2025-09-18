@@ -1,0 +1,223 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<windows.h>
+
+void gotoxy(int, int);
+void menu();
+void add();
+void view();
+void search();
+void modify();
+void deleterec();
+
+struct student{
+    char name[20];
+    char id[10];
+    int mark;
+    char course[20];
+    char attendance[20];
+    struct student *next;
+};
+
+struct student *head = NULL;
+
+int main(){
+    gotoxy(15, 8);
+    printf("<--:Student Record Management System:-->");
+    gotoxy(19, 15);
+    printf("Press any key to continue.");
+    getch();
+    menu();
+    return 0;
+}
+void menu(){
+    int choice;
+    while (1){
+        system("cls");
+        gotoxy(10, 3);
+        printf("<--:MENU:-->");
+        gotoxy(10, 5);
+        printf("1 : Add Record.");
+        gotoxy(10, 6);
+        printf("2 : View Record.");
+        gotoxy(10, 7);
+        printf("3 : Search Record.");
+        gotoxy(10, 8);
+        printf("4 : Modify Record.");
+        gotoxy(10, 9);
+        printf("5 : Delete Record.");
+        gotoxy(10, 10);
+        printf("6 : Exit.");
+        gotoxy(10, 12);
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar();
+        switch (choice){
+            case 1: add(); break;
+            case 2: view(); break;
+            case 3: search(); break;
+            case 4: modify(); break;
+            case 5: deleterec(); break;
+            case 6: exit(0);
+            default: printf("Invalid Choice. Try again.\n"); getch();
+        }
+    }
+}
+
+void add(){
+    struct student *new_node=(struct student*)malloc(sizeof(struct student));
+    if(!new_node) {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+    system("cls");
+    gotoxy(10, 3);
+    printf("<--:ADD RECORD:-->");
+    gotoxy(10, 5);
+    printf("Enter Name: ");
+    gets(new_node->name);
+    gotoxy(10, 6);
+    printf("Enter ID: ");
+    gets(new_node->id);
+    gotoxy(10, 7);
+    printf("Enter Mark: ");
+    scanf("%d", &new_node->mark);
+    getchar();
+    gotoxy(10, 8);
+    printf("Enter Course: ");
+    gets(new_node->course);
+    gotoxy(10, 9);
+    printf("Enter Attendance: ");
+    gets(new_node->attendance);
+    new_node->next = head;
+    head = new_node;
+    gotoxy(10, 11);
+    printf("Record Added Successfully!");
+    getch();
+}
+
+void view(){
+    struct student *temp=head;
+    system("cls");
+    gotoxy(10, 3);
+    printf("<--:VIEW RECORD:-->");
+    if (!temp){
+        gotoxy(10, 5);
+        printf("No records found!");
+    } else {
+        gotoxy(10, 5);
+        printf("Name        ID       Marks     Course     Attendance");
+        gotoxy(10, 6);
+        printf("---------------------------------------------------");
+        int i=8;
+        while (temp) {
+            gotoxy(10, i);
+            printf("%-10s %-8s %-8d %-10s %-10s", temp->name, temp->id, temp->mark, temp->course, temp->attendance);
+            temp = temp->next;
+            i++;
+        }
+    }
+    getch();
+}
+
+void search(){
+    struct student *temp = head;
+    char stname[20];
+    system("cls");
+    gotoxy(10, 3);
+    printf("<--:SEARCH RECORD:-->");
+    gotoxy(10, 5);
+    printf("Enter Name: ");
+    gets(stname);
+    while (temp){
+        if (strcmp(stname, temp->name) == 0){
+            gotoxy(10, 7);
+            printf("Name: %s",temp->name);
+            gotoxy(10, 8);
+            printf("ID: %s",temp->id);
+            gotoxy(10, 9);
+            printf("Mark: %d",temp->mark);
+            gotoxy(10, 10);
+            printf("Course: %s",temp->course);
+            gotoxy(10, 11);
+            printf("Attendance: %s",temp->attendance);
+            getch();
+            return;
+        }
+        temp=temp->next;
+    }
+    gotoxy(10, 7);
+    printf("Record Not Found!");
+    getch();
+}
+
+void modify(){
+    struct student *temp = head;
+    char stname[20];
+    system("cls");
+    gotoxy(10, 3);
+    printf("<--:MODIFY RECORD:-->");
+    gotoxy(10, 5);
+    printf("Enter Name: ");
+    gets(stname);
+    while (temp){
+        if (strcmp(stname, temp->name) == 0){
+            gotoxy(10, 7);
+            printf("Enter new Name: ");
+            gets(temp->name);
+            gotoxy(10, 8);
+            printf("Enter new ID: ");
+            gets(temp->id);
+            gotoxy(10, 9);
+            printf("Enter new Mark: ");
+            scanf("%d", &temp->mark);
+            getchar();
+            gotoxy(10, 10);
+            printf("Enter new Course: ");
+            gets(temp->course);
+            gotoxy(10, 11);
+            printf("Enter new Attendance: ");
+            gets(temp->attendance);
+            gotoxy(10, 13);
+            printf("Record Updated Successfully!");
+            getch();
+            return;
+        }
+        temp=temp->next;
+    }
+    gotoxy(10, 7);
+    printf("Record Not Found!");
+    getch();
+}
+
+void deleterec(){
+    struct student *temp = head, *prev = NULL;
+    char stname[20];
+    system("cls");
+    gotoxy(10, 3);
+    printf("<--:DELETE RECORD:-->");
+    gotoxy(10, 5);
+    printf("Enter Name: ");
+    gets(stname);
+    while(temp && strcmp(stname, temp->name) != 0){
+        prev=temp;
+        temp=temp->next;
+    }
+    if (!temp){
+        gotoxy(10, 7);
+        printf("Record Not Found!");
+    } else {
+        if (!prev) head = temp->next;
+        else prev->next = temp->next;
+        free(temp);
+        gotoxy(10, 7);
+        printf("Record Deleted Successfully!");
+    }
+    getch();
+}
+
+void gotoxy(int x, int y){
+    COORD c = {x, y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
